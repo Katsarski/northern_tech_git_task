@@ -28,7 +28,7 @@ def test_git_create_repo():
     assert code == 0
     
     response = create_github_repo(repo_name, 'Katsarski', os.getenv("GH_ACCESS_TOKEN"))
-    
+    assert f'https://github.com/Katsarski/{repo_name}.git' in response
     result, error, code = run_git_command(f'remote add origin https://github.com/Katsarski/{repo_name}.git')
     assert not result
     assert not error
@@ -45,7 +45,7 @@ def test_git_create_repo():
     assert code == 0
     
     result, error, code = run_git_command(f'push -u origin main')
-    assert not result
+    assert "branch 'main' set up to track 'origin/main'." in result
     assert not error
     assert code == 0
     
@@ -55,6 +55,5 @@ def test_git_create_repo():
     assert code == 0
 
     delete = delete_github_repo(repo_name, 'Katsarski', os.getenv("GH_ACCESS_TOKEN"))
-    assert repo_name in response
-    print("HDSHA")
+    assert delete.status_code == 204
     
