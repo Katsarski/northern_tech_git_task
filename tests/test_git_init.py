@@ -27,6 +27,8 @@ def test_git_create_repo():
     assert not error
     assert code == 0
     
+    response = create_github_repo(repo_name, 'Katsarski', os.getenv("GH_ACCESS_TOKEN"))
+    
     result, error, code = run_git_command(f'remote add origin https://github.com/Katsarski/{repo_name}.git')
     assert not result
     assert not error
@@ -38,7 +40,7 @@ def test_git_create_repo():
     assert code == 0
     
     result, error, code = run_git_command(f'commit -m "initial commit"')
-    assert not result
+    assert 'initial commit' in result
     assert not error
     assert code == 0
     
