@@ -23,9 +23,11 @@ jobs:
     - name: Install Git
       run: |
         if [ "${{ runner.os }}" == "Linux" ]; then
+          echo "Running on Linux"
           sudo apt-get update
           sudo apt-get install -y git
         elif [ "${{ runner.os }}" == "Windows" ]; then
+          echo "Running on Windows"
           choco install git
         fi
 
