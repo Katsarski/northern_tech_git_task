@@ -39,7 +39,7 @@ jobs:
 
     - name: Verify Git Authentication
       run: |
-        echo "protocol=https`nhost=github.com" | git credential fill
+        echo -e "protocol=https\nhost=github.com" | git credential fill
 
     - name: Install dependencies
       run: |
@@ -59,4 +59,56 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: test-report-${{ github.run_id }}-windows
+        path: report.html
+
+  test-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.13]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Configure Git for Linux
+      run: |
+        git config --global user.email "${{ secrets.GH_EMAIL }}"
+        git config --global user.name "${{ secrets.GH_USERNAME }}"
+        git config --global credential.helper store
+        git config --global core.askpass ""
+
+        # Set authentication using .netrc
+        echo machine github.com login x-access-token password ${{ secrets.GH_TOKEN }} > $HOME/.netrc
+        echo machine api.github.com login x-access-token password ${{ secrets.GH_TOKEN }} >> $HOME/.netrc
+
+        # Ensure correct permissions
+        chmod 600 $HOME/.netrc
+
+        # Explicitly set authentication for Git commands
+        git config --global credential.helper "!f() { echo username=x-access-token; echo password=${{ secrets.GH_TOKEN }}; }; f"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run tests and generate report
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        GH_USERNAME: ${{ secrets.GH_USERNAME }}
+        GH_EMAIL: ${{ secrets.GH_EMAIL }}
+      run: |
+        pytest -n 4 --html=report.html --self-contained-html --log-cli-level=INFO
+
+    - name: Upload test report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-report-${{ github.run_id }}-linux
         path: report.html
