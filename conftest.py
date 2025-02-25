@@ -14,7 +14,8 @@ def get_repo_name():
 @pytest.fixture
 def get_repo_path(get_repo_name):
     "Fixture to generate the full repo path"
-    return os.path.join(os.getcwd(), 'test_repos', get_repo_name)
+    root_dir = os.path.abspath(os.path.dirname(__file__))
+    return os.path.join(root_dir, 'test_repos', get_repo_name)
 
 @pytest.fixture
 def api_create_git_repo(get_repo_name, get_repo_path):
@@ -38,9 +39,9 @@ def api_create_git_repo(get_repo_name, get_repo_path):
 @pytest.fixture(autouse=True)
 def restore_cwd():
     "Saves and restores the current working directory after each test"
-    original_cwd = os.getcwd()
+    root_dir = os.path.abspath(os.path.dirname(__file__))
     yield
-    os.chdir(original_cwd)  # Reset back to the root dir of the project
+    os.chdir(root_dir)  # Reset back to the root dir of the project
     
 def pytest_configure(config):
     "Configure some basic logging for pytest"
