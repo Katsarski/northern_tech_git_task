@@ -42,12 +42,9 @@ def api_create_git_repo(get_repo_name, get_repo_path):
 @pytest.fixture(autouse=True)
 def restore_cwd():
     "Saves and restores the current working directory after each test"
-    root_dir = os.path.abspath(os.path.dirname(__file__))
-    # Adjust for GitHub Actions runner path
-    if 'GITHUB_WORKSPACE' in os.environ:
-        root_dir = os.path.join(os.environ['GITHUB_WORKSPACE'], 'northern_tech_git_task')
+    original_cwd = os.getcwd()
     yield
-    os.chdir(root_dir)  # Reset back to the root dir of the project
+    os.chdir(original_cwd)  # Reset back to the original working directory
     
 def pytest_configure(config):
     "Configure some basic logging for pytest"
