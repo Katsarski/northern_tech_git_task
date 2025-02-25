@@ -28,6 +28,10 @@ def api_create_git_repo(get_repo_name, get_repo_path):
     
     os.chdir(get_repo_path)
     
+    result = common.run_shell_command(f'git config --global init.defaultBranch main')
+    assert not result.stdout
+    assert not result.stderr
+    
     response = git_utils.api_create_github_repo(get_repo_name)
     assert f'{GITHUB_URL}/{os.getenv("GH_USERNAME")}/{get_repo_name}.git' in response, "GitHub repo creation failed."
     
