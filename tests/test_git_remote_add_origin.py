@@ -41,7 +41,7 @@ def test_git_remote_add_invalid_remote_add_syntax(api_create_git_repo):
     result = common.run_shell_command(f'git remote adb origin https://github.com/{os.getenv("GH_USERNAME")}/{repo_name}.git', with_errors=True)
     assert "error: unknown subcommand: `adb" in result.stderr, f"Expected to find error for wrong add usage but got {result.stderr}"
 
-@pytest.skip("This test is expected to fail as there is an issue with the error message")
+@pytest.mark.skip("This test is expected to fail as there is an issue with the error message")
 def test_git_remote_add_invalid_remote_add_origin_syntax(api_create_git_repo):
     "Test the git remote add command by providing the origin argument with a syntax error"
     
