@@ -17,7 +17,7 @@ def get_repo_path(get_repo_name):
     root_dir = os.path.abspath(os.path.dirname(__file__))
     # Adjust for GitHub Actions runner path
     if 'GITHUB_WORKSPACE' in os.environ:
-        root_dir = os.path.join(os.environ['GITHUB_WORKSPACE'], 'northern_tech_git_task')
+        root_dir = os.environ['GITHUB_WORKSPACE']
     return os.path.join(root_dir, 'test_repos', get_repo_name)
 
 @pytest.fixture
