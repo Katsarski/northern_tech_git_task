@@ -1,59 +1,34 @@
-from helpers.git_utils import run_git_command, generate_repo_name, create_github_repo, delete_github_repo
 import os
-import shutil
+from helpers import common
 
-def test_git_init():
-    """Test the git init command"""
-    repo_path = os.path.join('test_repos', generate_repo_name())
-    result, error, code = run_git_command(f'init {repo_path}')
-    assert code == 0
-    assert 'Initialized empty Git repository' in result
-    assert not error
+def test_git_init(api_create_git_repo):
+    "Test the git init command"
     
-    if os.path.exists(repo_path):
-        shutil.rmtree(repo_path)
-        print('Test repo dir removed successfully')
-        
-def test_git_create_repo():
-    repo_name = generate_repo_name()
+    repo_name = api_create_git_repo
+    
     repo_path = os.path.join('test_repos', repo_name)
-    result, error, code = run_git_command(f'init {repo_path}')
-    assert 'Initialized empty Git repository' in result
-    assert not error
-    assert code == 0
-    
-    result, error, code = run_git_command(f'remote remove origin')
-    assert not result
-    assert not error
-    assert code == 0
-    
-    response = create_github_repo(repo_name, 'Katsarski', os.getenv("GH_ACCESS_TOKEN"))
-    assert f'https://github.com/Katsarski/{repo_name}.git' in response
-    result, error, code = run_git_command(f'remote add origin https://github.com/Katsarski/{repo_name}.git')
-    assert not result
-    assert not error
-    assert code == 0
-    
-    result, error, code = run_git_command(f'add .')
-    assert not result
-    assert not error
-    assert code == 0
-    
-    result, error, code = run_git_command(f'commit -m "initial commit"')
-    assert 'initial commit' in result
-    assert not error
-    assert code == 0
-    
-    result, error, code = run_git_command(f'push -u origin main')
-    assert "branch 'main' set up to track 'origin/main'." in result
-    assert not error
-    assert code == 0
-    
-    result, error, code = run_git_command(f'remote -v')
-    assert result.count(repo_name) == 2
-    assert not error
-    assert code == 0
+    assert repo_path in os.getcwd(), f"Expected repository path '{repo_path}' not found in current working dir"
 
-    delete = delete_github_repo(repo_name, 'Katsarski', os.getenv("GH_ACCESS_TOKEN"))
-    assert delete.status_code == 204
+def test_git_init_invalid_name():
+    "Test the git init command by providing invalid repo name that contains whitespaces"
     
+    result = common.run_shell_command(f'git init test_repos/test repo with whitespaces', with_errors=True)
+    assert 'usage: git init' in result.stderr, f"Expected failure when trying to init repo but got {result.stderr}"
+    
+def test_git_init_invalid_syntax():
+    "Test the git init command by providing the init argument with a syntax error"
+    
+    result = common.run_shell_command(f'git int test_repos/test repo with whitespaces', with_errors=True)
+
+    # We normalize the message so we don't get issues when running cross-platform due to \n\r
+    expected_message = "git: 'int' is not a git command. See 'git --help'.\n\nThe most similar command is\n\tinit\n"
+    normalized_stderr = ' '.join(result.stderr.split())
+    normalized_expected = ' '.join(expected_message.split())
+    assert normalized_stderr == normalized_expected, f"Expected: {normalized_expected}, but got: {normalized_stderr}"
+    
+def test_git_init_invalid_flag():
+    "Test the git commit command by providing a non existing flag"
+    
+    result = common.run_shell_command(f'git init -k test_repos/test_repo', with_errors=True)
+    assert 'usage: git init' in result.stderr, f"Expected failure when trying to init repo but got {result.stderr}"
+    assert f"error: unknown switch `k" in result.stderr, f"Expected to find unknown flag error but got {result.stderr}"
