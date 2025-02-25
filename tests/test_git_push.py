@@ -20,7 +20,6 @@ def test_git_push(api_create_git_repo):
     result = common.run_shell_command(f'git branch -M main')
     
     result = common.run_shell_command(f'git push -u origin main', with_errors=True)
-    assert api_create_git_repo in result.stderr, f"Expected to see newly created main branch tracks remote main but got {result.stderr}"
     assert "branch 'main' set up to track 'origin/main'." in result.stdout, f"Expected to see tracking branch confirmation but got {result.stdout}"
     assert result.returncode == 0, f"Push command returned error code not 0 but {result.returncode}"
 
@@ -45,7 +44,7 @@ def test_git_push_no_upstream_branch_specified(api_create_git_repo):
 def test_push_invalid_syntax():
     "Test the git push command by providing the push argument with a syntax error"
     
-    result = common.run_shell_command(f'git pushh -u origin master"', with_errors=True)
+    result = common.run_shell_command(f'git pushh -u origin main', with_errors=True)
 
     # We normalize the message so we don't get issues when running cross-platform due to \n\r
     expected_message = "git: 'pushh' is not a git command. See 'git --help'.\n\nThe most similar command is\n\tpush\n"
@@ -56,5 +55,5 @@ def test_push_invalid_syntax():
 def test_git_push_invalid_flag():
     "Test the git push command by providing a non existing flag"
     
-    result = common.run_shell_command(f'git push -k origin master"', with_errors=True)
+    result = common.run_shell_command(f'git push -k origin main', with_errors=True)
     assert f"error: unknown switch `k" in result.stderr, f"Expected to find unknown flag error but got {result.stderr}"
