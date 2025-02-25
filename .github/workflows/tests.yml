@@ -25,6 +25,11 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y git
 
+    - name: Configure Git
+      run: |
+        git config --global user.email "boyankatsarski@gmail.com"
+        git config --global user.name "Katsarski"
+
     - name: Verify Git installation
       run: git --version
 
@@ -66,6 +71,11 @@ jobs:
       run: |
         echo "Running on Windows"
         choco install git
+
+    - name: Configure Git
+      run: |
+        git config --global user.email "boyankatsarski@gmail.com"
+        git config --global user.name "Katsarski"
 
     - name: Verify Git installation
       run: git --version
