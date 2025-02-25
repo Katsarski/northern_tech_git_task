@@ -15,6 +15,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Ensure Git is installed (Ubuntu)
+      if: runner.os == 'Linux'
+      run: sudo apt-get install git
+
+    - name: Ensure Git is installed (Windows)
+      if: runner.os == 'Windows'
+      run: choco install git
+      shell: pwsh
+
+    - name: Ensure Git is installed (macOS)
+      if: runner.os == 'macOS'
+      run: brew install git
+
     - name: Set up Python for ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -36,5 +49,5 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: test-report-${{ github.run_id }}
+        name: test-report-${{ github.run_id }}-${{ matrix.os }}-${{ matrix.python-version }}
         path: report.html
