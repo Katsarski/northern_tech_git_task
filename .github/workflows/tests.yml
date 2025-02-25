@@ -5,10 +5,10 @@ on:
 
 jobs:
   test:
-    runs-on: self-hosted
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest]
         python-version: [3.13]
 
     steps:
@@ -22,11 +22,7 @@ jobs:
     - name: Ensure Git is installed (Windows)
       if: runner.os == 'Windows'
       run: choco install git
-      shell: pwsh
-
-    - name: Ensure Git is installed (macOS)
-      if: runner.os == 'macOS'
-      run: brew install git
+      shell: powershell
 
     - name: Set up Python for ${{ matrix.python-version }}
       uses: actions/setup-python@v2
@@ -43,7 +39,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
         GH_USERNAME: ${{ secrets.GH_USERNAME }}
       run: |
-        pytest -n auto --html=report.html --self-contained-html --log-cli-level=INFO
+        pytest -n 2 --html=report.html --self-contained-html --log-cli-level=INFO
 
     - name: Upload/save test report
       if: always()
