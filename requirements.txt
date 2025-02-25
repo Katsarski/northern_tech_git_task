@@ -1,0 +1,5 @@
+pytest
+pylint
+requests
+pytest-xdist
+pytest-html

@@ -1,1 +1,0 @@
-# northern_tech_git_task
