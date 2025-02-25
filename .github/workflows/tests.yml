@@ -39,7 +39,7 @@ jobs:
 
     - name: Verify Git Authentication
       run: |
-        echo -e "protocol=https\nhost=github.com" | git credential fill
+        echo "protocol=https`nhost=github.com" | git credential fill
 
     - name: Install dependencies
       run: |

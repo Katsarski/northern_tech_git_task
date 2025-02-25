@@ -1,3 +1,4 @@
+import os
 import random
 import string
 import subprocess
@@ -20,7 +21,8 @@ def run_shell_command(command, with_errors=False):
     """
     
     logging.info(f"Executing shell command: {command}")
-    result = subprocess.run(command, capture_output=True, text=True)
+    logging.info(f"Current working directory: {os.getcwd()}")
+    result = subprocess.run(command, shell=True, capture_output=True, text=True)
     logging.info(f"Shell command stdout: {result.stdout}")
     logging.info(f"Shell command stderr: {result.stderr}")
     logging.info(f"Shell command return code: {result.returncode}")
