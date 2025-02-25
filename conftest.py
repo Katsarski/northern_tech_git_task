@@ -10,7 +10,6 @@ def get_repo_name():
     "Fixture to generate a unique repo name."
     return common.generate_repo_name()
 
-
 @pytest.fixture
 def get_repo_path(get_repo_name):
     "Fixture to generate the full repo path"
