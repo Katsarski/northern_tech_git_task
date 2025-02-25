@@ -56,7 +56,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
       run: |
-        pytest -n 4 --html=report.html --self-contained-html --log-cli-level=INFO
+        pytest -n 1 --html=report.html --self-contained-html --log-cli-level=INFO
 
     - name: Upload test report
       if: always()
