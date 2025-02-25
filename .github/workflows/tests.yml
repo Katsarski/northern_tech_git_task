@@ -14,7 +14,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
@@ -34,39 +34,28 @@ jobs:
         chmod 600 ~/.git-credentials
         git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git
 
-    - name: Verify Git installation
-      run: git --version
-
-    - name: Verify Git configuration
-      run: |
-        git config --list
-        git remote -v
-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Debug environment
+    - name: Debug directory structure
       run: |
-        echo "Current working directory: $(pwd)"
-        echo "Home directory: $HOME"
-        ls -la
-        ls -la $HOME
-        git status
+        echo "Checking test_repos directory..."
+        ls -la /home/runner/work/northern_tech_git_task/northern_tech_git_task/
+        ls -la /home/runner/work/northern_tech_git_task/northern_tech_git_task/test_repos || echo "test_repos does not exist"
 
-    - name: Run tests in parallel and generate report
+    - name: Run tests and generate report
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        GH_USERNAME: ${{ secrets.GH_USERNAME }}
       run: |
         pytest -n 1 --html=report.html --self-contained-html --log-cli-level=INFO
 
-    - name: Upload/save test report
+    - name: Upload test report
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: test-report-${{ github.run_id }}-ubuntu-${{ matrix.python-version }}
+        name: test-report-${{ github.run_id }}-ubuntu
         path: report.html
 
   test-windows:
@@ -79,7 +68,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
@@ -89,18 +78,24 @@ jobs:
         echo "Running on Windows"
         choco install git -y
 
-    - name: Configure Git
+    - name: Configure Git for Windows
       run: |
         git config --global user.email "${{ secrets.GH_EMAIL }}"
         git config --global user.name "${{ secrets.GH_USERNAME }}"
-        git config --global credential.helper wincred
-        echo "https://x-access-token:${{ secrets.GH_TOKEN }}@github.com" > $HOME/_netrc
+        git config --global credential.helper store
+
+        # Create _netrc file for authentication
+        echo machine github.com login x-access-token password ${{ secrets.GH_TOKEN }} > $HOME/_netrc
+        echo machine api.github.com login x-access-token password ${{ secrets.GH_TOKEN }} >> $HOME/_netrc
+
+        # Ensure correct line endings
+        unix2dos $HOME/_netrc || echo "unix2dos not needed"
+
+        # Set correct permissions
+        git config --global core.askpass ""
         git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git
 
-    - name: Verify Git installation
-      run: git --version
-
-    - name: Verify Git configuration
+    - name: Debug Git authentication
       run: |
         git config --list
         git remote -v
@@ -111,16 +106,15 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run tests in parallel and generate report
+    - name: Run tests and generate report
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        GH_USERNAME: ${{ secrets.GH_USERNAME }}
       run: |
         pytest -n 1 --html=report.html --self-contained-html --log-cli-level=INFO
 
-    - name: Upload/save test report
+    - name: Upload test report
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: test-report-${{ github.run_id }}-windows-${{ matrix.python-version }}
+        name: test-report-${{ github.run_id }}-windows
         path: report.html
