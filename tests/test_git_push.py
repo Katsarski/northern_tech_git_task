@@ -1,3 +1,5 @@
+import os
+from conftest import get_repo_name
 from helpers import common
 
 TEST_FILE_NAME = 'README.md'
@@ -15,10 +17,12 @@ def test_git_push(api_create_git_repo):
     result = common.run_shell_command(f'git commit -m "initial commit"')
     assert 'initial commit' in result.stdout, "Commit failed."
     
-    result = common.run_shell_command(f'git push -u origin master', with_errors=True)
-    assert result.stderr, "Expected an error when pushing to master."
-    assert "branch 'master' set up to track 'origin/master'" in result.stdout, "Push command did not set up tracking."
-    assert result.returncode == 0, "Push command failed."
+    result = common.run_shell_command(f'git branch -M main')
+    
+    result = common.run_shell_command(f'git push -u origin main', with_errors=True)
+    assert api_create_git_repo in result.stderr, f"Expected to see newly created main branch tracks remote main but got {result.stderr}"
+    assert "branch 'main' set up to track 'origin/main'." in result.stdout, f"Expected to see tracking branch confirmation but got {result.stdout}"
+    assert result.returncode == 0, f"Push command returned error code not 0 but {result.returncode}"
 
 def test_git_push_no_upstream_branch_specified():
     "Test the git push command by not providing upstream branch name"

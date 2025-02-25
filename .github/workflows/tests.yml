@@ -48,6 +48,13 @@ jobs:
       run: |
         pip list
 
+    - name: Debug environment
+      run: |
+        echo "Current working directory: $(pwd)"
+        echo "Home directory: $HOME"
+        ls -la
+        ls -la $HOME
+
     - name: Run tests in parallel and generate report
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
