@@ -22,15 +22,16 @@ def get_repo_path(get_repo_name):
 @pytest.fixture
 def api_create_git_repo(get_repo_name, get_repo_path):
     "Fixture to create a git repo using the github API"
+        
+    result = common.run_shell_command(f'git config --global init.defaultBranch main')
+    assert not result.stdout
+    assert not result.stderr
+    
     os.makedirs(get_repo_path, exist_ok=True)  # Create the directory if it doesn't exist
     result = common.run_shell_command(f'git init {get_repo_path}')
     assert 'Initialized empty Git repository' in result.stdout, "Git init failed."
     
     os.chdir(get_repo_path)
-    
-    result = common.run_shell_command(f'git config --global init.defaultBranch main')
-    assert not result.stdout
-    assert not result.stderr
     
     response = git_utils.api_create_github_repo(get_repo_name)
     assert f'{GITHUB_URL}/{os.getenv("GH_USERNAME")}/{get_repo_name}.git' in response, "GitHub repo creation failed."
