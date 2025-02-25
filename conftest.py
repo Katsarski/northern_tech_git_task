@@ -15,6 +15,9 @@ def get_repo_name():
 def get_repo_path(get_repo_name):
     "Fixture to generate the full repo path"
     root_dir = os.path.abspath(os.path.dirname(__file__))
+    # Adjust for GitHub Actions runner path
+    if 'GITHUB_WORKSPACE' in os.environ:
+        root_dir = os.path.join(os.environ['GITHUB_WORKSPACE'], 'northern_tech_git_task')
     return os.path.join(root_dir, 'test_repos', get_repo_name)
 
 @pytest.fixture
@@ -40,6 +43,9 @@ def api_create_git_repo(get_repo_name, get_repo_path):
 def restore_cwd():
     "Saves and restores the current working directory after each test"
     root_dir = os.path.abspath(os.path.dirname(__file__))
+    # Adjust for GitHub Actions runner path
+    if 'GITHUB_WORKSPACE' in os.environ:
+        root_dir = os.path.join(os.environ['GITHUB_WORKSPACE'], 'northern_tech_git_task')
     yield
     os.chdir(root_dir)  # Reset back to the root dir of the project
     
