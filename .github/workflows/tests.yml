@@ -128,8 +128,10 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Configure Git for macOS
+    - name: Create a separate Git config
       run: |
+        # Create a unique git config file for the current job run
+        export GIT_CONFIG_FILE="$HOME/.gitconfig_${{ github.run_id }}"
         git config --global user.email "${{ secrets.GH_EMAIL }}"
         git config --global user.name "${{ secrets.GH_USERNAME }}"
         git config --global credential.helper store
