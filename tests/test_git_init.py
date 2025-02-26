@@ -1,5 +1,5 @@
 """
-Test suite for validating the behavior of the 'git init' command in different scenarios.
+Test suite for validating the behavior of the 'git init' command in different scenarios. 
 """
 
 
