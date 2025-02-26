@@ -1,6 +1,10 @@
 # Northern Tech Git Task
 
-This repository contains a series of automated tests for various Git commands using Python and Pytest. The tests are able to run on multiple platforms (Windows, Linux, and macOS) using GitHub Actions.
+This repository contains a series of automated tests for various Git commands using Python and Pytest. 
+
+The tests are able to run on multiple platforms (Windows, Linux, and macOS) using GitHub Actions.
+
+The code is automatically checked when a PR is opened using linter pylint (not blocking)
 
 ## Project Structure
 
