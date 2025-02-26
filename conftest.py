@@ -7,9 +7,8 @@ test executionss
 import os
 import logging
 import pytest
+import config
 from helpers import common, git_utils
-
-GITHUB_URL = "https://github.com"
 
 @pytest.fixture
 def get_repo_name() -> str:
@@ -43,7 +42,7 @@ def get_repo_path(get_repo_name: str) -> str:
 
 
 @pytest.fixture
-def api_create_git_repo(get_repo_name: str, get_repo_path: str):
+def api_create_git_repo(get_repo_name: str, get_repo_path: str, request):
     """
     Fixture to create a git repository using the GitHub API, set up local git configuration, 
     and add a remote repository.
@@ -51,6 +50,7 @@ def api_create_git_repo(get_repo_name: str, get_repo_path: str):
     Parameters:
         - get_repo_name: The name of the repository to be created.
         - get_repo_path: The local file system path to the repository.
+        - remote_only: If True, only the remote repository is created (no local).
 
     Yields:
         - The name of the created repository for further testing.
@@ -58,35 +58,36 @@ def api_create_git_repo(get_repo_name: str, get_repo_path: str):
     Cleanup:
         - Deletes the created GitHub repository after the test.
     """
+    remote_only = request.node.callspec.params["remote_only"] if hasattr(request.node, "callspec") else False
+    
     # Set global default branch to 'main'
-    result = common.run_shell_command('git config --global init.defaultBranch main')
+    result = common.run_shell_command(f'git config --global init.defaultBranch {config.DEFAULT_BRANCH}')
     assert not result.stdout, "Error with git config for default branch."
     assert not result.stderr, f"Unexpected error: {result.stderr}"
     
-    # Create the local repository path if it doesn't exist
-    os.makedirs(get_repo_path, exist_ok=True)
+    if not remote_only:
+        os.makedirs(get_repo_path, exist_ok=True)
+        # Initialize loclaly the git repository
+        result = common.run_shell_command(f'git init {get_repo_path}')
+        assert 'Initialized empty Git repository' in result.stdout, "Git init failed."
+        os.chdir(get_repo_path)  # Change directory to the new repo path
     
-    # Initialize the git repository
-    result = common.run_shell_command(f'git init {get_repo_path}')
-    assert 'Initialized empty Git repository' in result.stdout, "Git init failed."
-    
-    os.chdir(get_repo_path)  # Change directory to the new repo path
-    
-    # Create the GitHub repository using the API
+    # Create the git repo using the API
     response = git_utils.api_create_github_repo(get_repo_name)
-    assert f'{GITHUB_URL}/{os.getenv("GH_USERNAME")}/{get_repo_name}.git' in response.text, (
+    assert f'{config.GH_URL}/{config.GH_USERNAME}/{get_repo_name}.git' in response.text, (
     "GitHub repo creation failed.")
 
-    # Add the remote repository
-    result = common.run_shell_command(
-        f'git remote add origin {GITHUB_URL}/'
-        f'{os.getenv("GH_USERNAME")}/{get_repo_name}.git'
-    )
-    assert not result.stdout, "Error adding remote origin."
+    if not remote_only:
+        # Add the remote repository
+        result = common.run_shell_command(
+            f'git remote add origin {config.GH_URL}/'
+            f'{os.getenv("GH_USERNAME")}/{get_repo_name}.git'
+        )
+        assert not result.stdout, "Error adding remote origin."
     
     yield get_repo_name  # Yield the repository name to the test
     
-    # Cleanup: Delete the GitHub repository after the test
+    # Delete the git repo after the test is finished
     delete = git_utils.api_delete_github_repo(get_repo_name)
     assert delete.status_code == 204, (
         f"Failed to delete GitHub repo. Status code: {delete.status_code}")

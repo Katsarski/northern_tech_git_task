@@ -4,11 +4,11 @@ generating random GitHub repository names, normalizing and comparing strings,
 and creating test files for use in a repository
 """
 
-import os
 import random
 import string
 import subprocess
 import logging
+import config
 
 def run_shell_command(command: str, with_errors: bool = False) -> subprocess.CompletedProcess:
     """
@@ -93,9 +93,7 @@ def create_test_file() -> str:
     - Test file name that was created inside the repo from the given context
     """
     
-    test_file_name = 'README.md'
-    
-    with open(test_file_name, 'w', encoding='utf-8') as f:
+    with open(config.TEST_FILE_NAME, 'w', encoding='utf-8') as f:
         f.write('Test file content')
     
-    return test_file_name
+    return config.TEST_FILE_NAME

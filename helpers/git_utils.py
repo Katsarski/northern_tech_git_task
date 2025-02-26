@@ -7,9 +7,7 @@ import logging
 import os
 import urllib
 import requests
-
-GITHUB_API_URL = "https://api.github.com"
-GITHUB_ACCESS_TOKEN = os.getenv("GH_TOKEN")
+import config
 
 
 def api_create_github_repo(repo_name: str) -> requests.Response:
@@ -34,9 +32,9 @@ def api_create_github_repo(repo_name: str) -> requests.Response:
     
     logging.info(f"Creating repo with name: {repo_name}")
     
-    url = f"{GITHUB_API_URL}/user/repos"
+    url = f"{config.GH_API_URL}/user/repos"
     headers = {
-        "Authorization": f"Bearer {GITHUB_ACCESS_TOKEN}",
+        "Authorization": f"Bearer {config.GH_TOKEN}",
         "Accept": "application/vnd.github+json"
     }
     data = {"name": repo_name, "private": True}
@@ -68,10 +66,10 @@ def api_delete_github_repo(repo_name: str) -> requests.Response:
     
     # URL encode the repo name to handle special characters in the name.
     repo_name_encoded = urllib.parse.quote(repo_name)
-    url = f"{GITHUB_API_URL}/repos/{os.getenv('GH_USERNAME')}/{repo_name_encoded}"
+    url = f"{config.GH_API_URL}/repos/{os.getenv('GH_USERNAME')}/{repo_name_encoded}"
     
     headers = {
-        "Authorization": f"Bearer {GITHUB_ACCESS_TOKEN}",
+        "Authorization": f"Bearer {config.GH_TOKEN}",
         "Accept": "application/vnd.github+json"
     }
     

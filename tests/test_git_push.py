@@ -3,6 +3,7 @@ Test suite for validating the behavior of the 'git push' command in different sc
 """
 
 
+import config
 from helpers import common
 
 
@@ -19,11 +20,11 @@ def test_git_push(api_create_git_repo):
     result = common.run_shell_command('git commit -m "initial commit"')
     assert 'initial commit' in result.stdout, "Commit failed: expected message not found."
 
-    result = common.run_shell_command('git branch -M main')
+    result = common.run_shell_command(f'git branch -M {config.DEFAULT_BRANCH}')
 
-    result = common.run_shell_command('git push -u origin main', with_errors=True)
+    result = common.run_shell_command(f'git push -u origin {config.DEFAULT_BRANCH}', with_errors=True)
     assert (
-        "branch 'main' set up to track 'origin/main'." in result.stdout
+        f"branch '{config.DEFAULT_BRANCH}' set up to track 'origin/{config.DEFAULT_BRANCH}'." in result.stdout
     ), f"Expected to see tracking branch confirmation, but got: {result.stdout}"
 
     assert (
@@ -44,18 +45,18 @@ def test_git_push_no_upstream_branch_specified(api_create_git_repo):
     result = common.run_shell_command('git commit -m "initial commit"')
     assert 'initial commit' in result.stdout, "Commit failed: expected message not found."
 
-    result = common.run_shell_command('git branch -M main')
+    result = common.run_shell_command(f'git branch -M {config.DEFAULT_BRANCH}')
 
     result = common.run_shell_command('git push -u', with_errors=True)
     assert (
-        "fatal: The current branch main has no upstream branch" in result.stderr
+       f"fatal: The current branch {config.DEFAULT_BRANCH} has no upstream branch" in result.stderr
     ), f"Expected error for no upstream branch, but got: {result.stderr}"
 
 
 def test_push_invalid_syntax():
     """Test the git push command with an invalid syntax."""
     
-    result = common.run_shell_command('git pushh -u origin main', with_errors=True)
+    result = common.run_shell_command(f'git pushh -u origin {config.DEFAULT_BRANCH}', with_errors=True)
 
     # Normalize the message to avoid cross-platform issues with \n\r
     expected_message = (
@@ -69,7 +70,7 @@ def test_push_invalid_syntax():
 def test_git_push_invalid_flag():
     """Test the git push command with an invalid flag."""
     
-    result = common.run_shell_command('git push -k origin main', with_errors=True)
+    result = common.run_shell_command(f'git push -k origin {config.DEFAULT_BRANCH}', with_errors=True)
 
     assert (
         "error: unknown switch `k" in result.stderr
