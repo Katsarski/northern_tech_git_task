@@ -1,70 +1,84 @@
+"""
+This module provides functions to interact with the git API, specifically for creating 
+and deleting git repositories
+"""
+
 import logging
-import requests
 import os
 import urllib
+import requests
 
 GITHUB_API_URL = "https://api.github.com"
-GITHUB_ACCESS_TOKEN = os.getenv("GH_TOKEN")        
+GITHUB_ACCESS_TOKEN = os.getenv("GH_TOKEN")
 
-def api_create_github_repo(repo_name):
+
+def api_create_github_repo(repo_name: str) -> requests.Response:
     """
-    Creates a github repository using the github API and returns the created repo url
+    Creates a git repo using the git API and returns the response with the repo details
 
     Parameters:
-    - repo_name (str): The name of the repository to be created.
+    - repo_name: The name of the repo to be created.
 
     Returns:
-    - str: The URL of the newly created github repo.
+    - requests.Response: The response object containing details of the created git repo
 
     Raises:
-    - Exception: If the repository creation fails, an exception is raised with the error message from guithub.
+    - Exception: If the repo creation fails, an exception is raised with the error 
+      message from Github
 
     Notes:
-    - The function requires a valid github access token to be set in the environment variable 'GH_TOKEN'.
-    - The repository is created as a private repository by default.
+    - The function requires a valid git access token to be set in the environment 
+      variable anmed as 'GH_TOKEN'
+    - The repo is created as a private one by default
     """
     
-    logging.info(f"Creating github repo with name: {repo_name}")
+    logging.info(f"Creating repo with name: {repo_name}")
     
     url = f"{GITHUB_API_URL}/user/repos"
-    headers = {"Authorization": f"Bearer {GITHUB_ACCESS_TOKEN}", "Accept": "application/vnd.github+json"}
+    headers = {
+        "Authorization": f"Bearer {GITHUB_ACCESS_TOKEN}",
+        "Accept": "application/vnd.github+json"
+    }
     data = {"name": repo_name, "private": True}
-    response = requests.post(url, json=data, headers=headers)
+    response = requests.post(url, json=data, headers=headers, timeout=30)
     
     if response.status_code != 201:
-        raise Exception(f"GitHub Repo creation failed: {response.text}")
+        raise requests.exceptions.HTTPError(f"Repo creation failed: {response.text}")
         
-    logging.info(f"Successfully created github repo with name: {repo_name}")
-    return response.json()["clone_url"]
+    logging.info(f"Successfully created repo with name: {repo_name}")
+    return response
 
-def api_delete_github_repo(repo_name, username):
+
+def api_delete_github_repo(repo_name: str) -> requests.Response:
     """
-    Deletes a GitHub repository using the github API.
+    Deletes a repo using the github API
 
     Parameters:
-    - repo_name (str): The name of the repository to be deleted.
+    - repo_name: The name of the repo to be deleted
 
     Returns:
-    - None
+    - requests.Response: The response object confirming the deletion
 
     Raises:
-    - Exception: If the repository deletion fails, an exception is raised with the error message from github.
-
-    Notes:
-    - The function requires a valid github access token to be set in the environment variable 'GH_TOKEN'.
-    - The repository must exist and the authenticated user must have the necessary permissions to delete it (correct token scope).
+    - Exception: If the repo deletion fails, an exception is raised with the error 
+      message from Github
     """
     
-    logging.info(f"Deleting github repo with name: {repo_name}")
+    logging.info(f"Deleting git repo with name: {repo_name}")
     
+    # URL encode the repo name to handle special characters in the name.
     repo_name_encoded = urllib.parse.quote(repo_name)
-    url = f"{GITHUB_API_URL}/repos/{username}/{repo_name_encoded}"
-    headers = {"Authorization": f"Bearer {GITHUB_ACCESS_TOKEN}", "Accept": "application/vnd.github+json"}
+    url = f"{GITHUB_API_URL}/repos/{os.getenv('GH_USERNAME')}/{repo_name_encoded}"
     
-    response = requests.delete(url, headers=headers)
+    headers = {
+        "Authorization": f"Bearer {GITHUB_ACCESS_TOKEN}",
+        "Accept": "application/vnd.github+json"
+    }
+    
+    response = requests.delete(url, headers=headers, timeout=30)
     
     if response.status_code != 204:
-        raise Exception(f"GitHub Repo deletion failed: {response.text}")
+        raise requests.exceptions.HTTPError(f"Repo deletion failed: {response.text}")
     
-    logging.info(f"Successfully deleted github repo with name: {repo_name}")
+    logging.info(f"Successfully deleted repo with name: {repo_name}")
     return response

@@ -1,5 +1,5 @@
-pytest
-pylint
-requests
-pytest-xdist
-pytest-html
+pytest==8.3.4
+pylint==3.3.4
+requests==2.32.3
+pytest-xdist==3.6.1
+pytest-html==4.1.1

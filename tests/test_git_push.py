@@ -1,59 +1,76 @@
-import os
-from conftest import get_repo_name
+"""
+Test suite for validating the behavior of the 'git push' command in different scenarios.
+"""
+
+
 from helpers import common
 
-TEST_FILE_NAME = 'README.md'
 
 def test_git_push(api_create_git_repo):
-    "Test the git push command with valid upstream branch"
+    """Test the git push command with a valid upstream branch."""
     
     api_create_git_repo
 
-    with open(TEST_FILE_NAME, 'w') as f:
-        f.write('Test file content')
-    result = common.run_shell_command(f'git add .')
-    assert not result.stdout, "Error with git add."
+    common.create_test_file()
 
-    result = common.run_shell_command(f'git commit -m "initial commit"')
-    assert 'initial commit' in result.stdout, "Commit failed."
-    
-    result = common.run_shell_command(f'git branch -M main')
-    
-    result = common.run_shell_command(f'git push -u origin main', with_errors=True)
-    assert "branch 'main' set up to track 'origin/main'." in result.stdout, f"Expected to see tracking branch confirmation but got {result.stdout}"
-    assert result.returncode == 0, f"Push command returned error code not 0 but {result.returncode}"
+    result = common.run_shell_command('git add .')
+    assert not result.stdout, f"Expected empty stdout, but got: {result.stdout}"
+
+    result = common.run_shell_command('git commit -m "initial commit"')
+    assert 'initial commit' in result.stdout, "Commit failed: expected message not found."
+
+    result = common.run_shell_command('git branch -M main')
+
+    result = common.run_shell_command('git push -u origin main', with_errors=True)
+    assert (
+        "branch 'main' set up to track 'origin/main'." in result.stdout
+    ), f"Expected to see tracking branch confirmation, but got: {result.stdout}"
+
+    assert (
+        result.returncode == 0
+    ), f"Push command returned error code {result.returncode} instead of 0."
+
 
 def test_git_push_no_upstream_branch_specified(api_create_git_repo):
-    "Test the git push command by not providing upstream branch name"
+    """Test the git push command without specifying an upstream branch."""
     
     api_create_git_repo
 
-    with open(TEST_FILE_NAME, 'w') as f:
-        f.write('Test file content')
-    result = common.run_shell_command(f'git add .')
-    assert not result.stdout, "Error with git add."
+    common.create_test_file()
 
-    result = common.run_shell_command(f'git commit -m "initial commit"')
-    assert 'initial commit' in result.stdout, "Commit failed."
-    
-    result = common.run_shell_command(f'git branch -M main')
-    
-    result = common.run_shell_command(f'git push -u', with_errors=True)
-    assert f"fatal: The current branch main has no upstream branch" in result.stderr, f"Expected to find no upstream branch error but got {result.stderr}"
+    result = common.run_shell_command('git add .')
+    assert not result.stdout, f"Expected empty stdout, but got: {result.stdout}"
+
+    result = common.run_shell_command('git commit -m "initial commit"')
+    assert 'initial commit' in result.stdout, "Commit failed: expected message not found."
+
+    result = common.run_shell_command('git branch -M main')
+
+    result = common.run_shell_command('git push -u', with_errors=True)
+    assert (
+        "fatal: The current branch main has no upstream branch" in result.stderr
+    ), f"Expected error for no upstream branch, but got: {result.stderr}"
+
 
 def test_push_invalid_syntax():
-    "Test the git push command by providing the push argument with a syntax error"
+    """Test the git push command with an invalid syntax."""
     
-    result = common.run_shell_command(f'git pushh -u origin main', with_errors=True)
+    result = common.run_shell_command('git pushh -u origin main', with_errors=True)
 
-    # We normalize the message so we don't get issues when running cross-platform due to \n\r
-    expected_message = "git: 'pushh' is not a git command. See 'git --help'.\n\nThe most similar command is\n\tpush\n"
-    normalized_stderr = ' '.join(result.stderr.split())
-    normalized_expected = ' '.join(expected_message.split())
-    assert normalized_stderr == normalized_expected, f"Expected: {normalized_expected}, but got: {normalized_stderr}"
+    # Normalize the message to avoid cross-platform issues with \n\r
+    expected_message = (
+        "git: 'pushh' is not a git command. See 'git --help'.\n\n"
+        "The most similar command is\n\tpush\n"
+    )
+
+    common.compare_normalized_strings(result.stderr, expected_message)
+
 
 def test_git_push_invalid_flag():
-    "Test the git push command by providing a non existing flag"
+    """Test the git push command with an invalid flag."""
     
-    result = common.run_shell_command(f'git push -k origin main', with_errors=True)
-    assert f"error: unknown switch `k" in result.stderr, f"Expected to find unknown flag error but got {result.stderr}"
+    result = common.run_shell_command('git push -k origin main', with_errors=True)
+
+    assert (
+        "error: unknown switch `k" in result.stderr
+    ), f"Expected error for unknown flag, but got: {result.stderr}"
