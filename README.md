@@ -27,7 +27,7 @@ The tests cover the following Git commands:
 
 ## Improvements
 
-The following improvements can be made to enhance the project:
+The following improvements can be made to enhance the project::
 
 1. **Additional Test Cases**:
    - Add more test cases to cover edge cases and additional Git commands (e.g., `git merge`, `git rebase`, `git pull` and more).
