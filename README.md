@@ -6,7 +6,7 @@ The tests are able to run on multiple platforms (Windows, Linux, and macOS) usin
 
 The code is automatically checked when a PR is opened using linter pylint (not blocking)
 
-**Further planned implementations are listed later in the README.md**
+**Further planned implementations (as required in the task) are listed later in the README.md**
 
 ## Project Structure
 
@@ -43,6 +43,7 @@ The following improvements can be made to enhance the project::
    - Fix parallel runs - currently fails due to issues related to the various threads trying to use the .git files concurently
    - Improve workflow by merging common configuration steps for the various OSs to avoid duplication
    - Rate limit the requests against GitHub to avoid depleting the dedicated quota
+   - Introduce docker containers with pre-build images containing the base image and dependencies to speed up the execution
 
 ## Running the Tests
 
@@ -66,7 +67,12 @@ To run the tests locally, follow these steps:
     pip install -r requirements.txt
     Optional (might be required): Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 
-3. Run: pytest
+3. Introduce the following example environment variables
+   - GH_EMAIL: boyankatsarski@gmail.com
+   - GH_TOKEN: PAT token with CRUD operations enabled at least for the `northern_tech_git_task` repo
+   - GH_USERNAME: Katsarski
+
+4. Run: pytest
 
 ## QA Homework Task references and thoughts
 
@@ -74,9 +80,9 @@ To run the tests locally, follow these steps:
 
 - There are core commands I haven't yet covered, however the approach would be more or less similar to what I've done so far hence I've decided to stop at this point. 
 
-- Obviously there are quite a lot more scenarios that I haven't covered that potentially affect all the commands that I've covered and the ones I haven't, I'll list some examples here. This list is my proposal for the further steps to be automated (not listed by priority since determining the priority requires lots of assumptions I don't think would be grounded on solid information).
+- Obviously there are quite a lot more scenarios that I haven't covered that potentially affect all the commands that I've covered and the ones I haven't, I'll list some examples here. This list is my proposal for the further steps to be automated (not listed by priority since determining the priority requires lots of assumptions I don't think would be grounded on solid information without taking into account some business-related aspects at the time of implementation in a real-world scenario).
 
-- I realized that listing all of my ideas and permutations is going to be a bit too much so I've decided squeeze the ideas in the form of a list that briefly touches upon some important (IMO) aspects. 
+- I realized that listing all of my ideas and permutations is going to be a bit too much so I've decided squeeze the ideas in the form of a list that briefly touches upon some important (IMO) aspects which can be used as guidance  for the next phases of test creation. 
 
   - **Proposal for more positive tests**  
     - Test mmore core commands e.g. git merge, git fetch, git revert, git tag, git diff, git rm
@@ -101,6 +107,7 @@ To run the tests locally, follow these steps:
       - .gitignore - in the context of excluding senstiive files
       - Repo access controls in general - read/write operations, privileges, private/public repo concept
       - Git user configuration (user.name, user.email) not exposed in any way 
+      - Integrate static/dynamic application security testing solutions into the CI/CD pipeline
 
   - **Proposal for more negative tests**  
     - Test the currently covered and the ones that are not in a negative context
@@ -116,5 +123,8 @@ To run the tests locally, follow these steps:
       - Accessing a private repo (check for responces indicating that e.g. the repo exists but is not accessible i.e. 404 vs 401)
       - Using the repo with expired/removed SSH/Access token
 
+  - **Describe what the second phase of the test implementation would be**  
+    - In my opinion the next phase would be to cover the above listed scenarios (and more oriented around the different functional/non-functional aspects) and then move to the other Git components (API/UI), this will help build the rest on a solid working solution helping reliably extend the ways users can interact with Git. 
 
-
+- **Describe the requirements of the system that would run these tests in a continuous integration manner.**  
+    - Github actions is working for me at this point. Any other CI/CD tool should be able to run tests against git having the dependencies installed - being a self-hosted solution or with cloud-based runners. The tests shall be running on multiple OSs to confirm cross OS support. Tests should be running in parallel to speed up execution and shall ideally run on a regular-basis e.g. on each MR created against the main branch
