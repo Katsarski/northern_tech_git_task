@@ -62,6 +62,7 @@ jobs:
         path: report.html
 
   test-linux:
+    needs: test-windows
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -114,6 +115,7 @@ jobs:
         path: report.html
 
   test-macos:
+    needs: test-linux
     runs-on: macos-latest
     strategy:
       matrix:
