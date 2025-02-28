@@ -54,6 +54,10 @@ The following improvements can be made to enhance the project::
    - Rate limit the requests against GitHub to avoid depleting the dedicated quota
    - Introduce docker containers with pre-build images containing the base image and dependencies to speed up the execution
 
+3. **Access**:
+   - The Regular Access/PAT token that shall be created according to this readme.md is specified as full write access - ideally least privileged access is identified and applied instead.
+   - Test user accounts need to be setup for Github access to isolate the actions performed and avoid operations against repos outside of the scope of the tests
+
 ## Running the Tests
 
 To run the tests locally, follow these steps:
@@ -81,7 +85,7 @@ To run the tests locally, follow these steps:
 
 3. Introduce the following (example) environment variables
    - GH_EMAIL: boyankatsarski@gmail.com <-- change to your account
-   - GH_TOKEN: PAT OR regular GitHub access token with CRUD operations for the given account
+   - GH_TOKEN: PAT OR regular GitHub access token with CRUD operations for the given account. Ideally with full write access for future created repos.
    - GH_USERNAME: Katsarski <-- change to your username
 
 4. Run: `pytest`
