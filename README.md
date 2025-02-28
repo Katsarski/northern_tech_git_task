@@ -47,6 +47,8 @@ The following improvements can be made to enhance the project::
 
 1. **Additional Test Cases**:
    - Add more test cases to cover edge cases and additional Git commands (e.g., `git merge`, `git rebase`, `git pull` and more).
+   - Extend the coverage to cover more command flags for each command
+   - Check `git reflog` on regular basis to assert executed commands/actions are stored in git log
 
 2. **Continuous Integration**:
    - Fix parallel runs - currently fails due to issues related to the various threads trying to use the .git files concurently
