@@ -32,7 +32,16 @@ The tests cover the following Git commands:
 - `git stash`
 - `git restore`
 
-## Improvements
+## Potential issues found
+
+The following issue was observed when creating the tests:
+- Running the below tests (specifically the `git status` command) on macOS caused the stdout stream to output message that is not the same as on Windows and Linux platforms causing the assertion to fail. Further I've checked the installed git version on each runner which is the same i.e. 2.48.1. I would recommend aligning the output to avoid confusion and keep consistency between the different OSs. The errors and differences can be checked in one of the CI/CD test runs on macOS e.g. https://github.com/Katsarski/northern_tech_git_task/actions/runs/13562642040/job/37909273632: 
+  - tests/test_git_restore.py::test_git_restore_staged_changes
+  - tests/test_git_status.py::test_git_status_no_changes
+  - tests/test_git_status.py::test_git_status_with_changed_file
+  - tests/test_git_status.py::test_git_status_with_tracked_file
+
+## Solution Improvements
 
 The following improvements can be made to enhance the project::
 
@@ -71,9 +80,9 @@ To run the tests locally, follow these steps:
     - Optional (might be required): run `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process`
 
 3. Introduce the following (example) environment variables
-   - GH_EMAIL: boyankatsarski@gmail.com
+   - GH_EMAIL: boyankatsarski@gmail.com <-- change to your account
    - GH_TOKEN: PAT OR regular GitHub access token with CRUD operations for the given account
-   - GH_USERNAME: Katsarski
+   - GH_USERNAME: Katsarski <-- change to your username
 
 4. Run: `pytest`
 
