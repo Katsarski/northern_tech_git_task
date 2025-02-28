@@ -59,7 +59,7 @@ The following improvements can be made to enhance the project::
    - The Regular Access/PAT token that shall be created according to this readme.md is specified as full write access - ideally least privileged access is identified and applied instead.
    - Test user accounts need to be setup for Github access to isolate the actions performed and avoid operations against repos outside of the scope of the tests
 
-## Running the Tests
+## Running the Tests (tested on Linux git version 2.39.5 and Windows git version 2.46.1.windows.1)
 
 To run the tests locally, follow these steps: (Tests are also integrated into GitHub Actions and run can be triggered manually from there to run in a CI/CD manner - Action/Workflow is called `Tests`. Located here: https://github.com/Katsarski/northern_tech_git_task/actions/workflows/tests.yml -> Run Workflow):
 
