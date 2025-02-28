@@ -53,6 +53,7 @@ The following improvements can be made to enhance the project::
    - Improve workflow by merging common configuration steps for the various OSs to avoid duplication
    - Rate limit the requests against GitHub to avoid depleting the dedicated quota
    - Introduce docker containers with pre-build images containing the base image and dependencies to speed up the execution
+   - Modify the workflow to allow on-demand-per-platform runs as it currently triggers for all OSs (Windows, Linux, macOS)
 
 3. **Access**:
    - The Regular Access/PAT token that shall be created according to this readme.md is specified as full write access - ideally least privileged access is identified and applied instead.
