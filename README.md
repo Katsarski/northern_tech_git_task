@@ -60,7 +60,7 @@ The following improvements can be made to enhance the project::
 
 ## Running the Tests
 
-To run the tests locally, follow these steps:
+To run the tests locally, follow these steps: (Tests are also integrated into GitHub Actions and run can be triggered manually from there to run in a CI/CD manner - Action/Workflow is called `Tests`):
 
 1. Clone the repository:
    ```sh
