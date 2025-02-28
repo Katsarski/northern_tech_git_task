@@ -10,13 +10,14 @@ import subprocess
 import logging
 import config
 
-def run_shell_command(command: str, with_errors: bool = False) -> subprocess.CompletedProcess:
+def run_shell_command(command: str, with_errors: bool = False, with_logging=True) -> subprocess.CompletedProcess:
     """
     Executes a given shell command and returns the std I/O streams and the program return code
 
     Parameters:
     - command: The shell command to execute
     - with_errors: If False, asserts that there are no errors in the command execution
+    - with_logging: If True, command and the output streams are logged (disable for sensitive I/Os)
 
     Returns:
     - subprocess.CompletedProcess: stdout, stderr, and returncode
@@ -26,13 +27,15 @@ def run_shell_command(command: str, with_errors: bool = False) -> subprocess.Com
     a non zero program return code
     """
     
-    logging.info(f"Executing shell command: {command}")
+    if with_logging:
+        logging.info(f"Executing shell command: {command}")
     
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     
-    logging.info(f"stdout: {result.stdout}")
-    logging.info(f"stderr: {result.stderr}")
-    logging.info(f"return code: {result.returncode}")
+    if with_logging:
+        logging.info(f"stdout: {result.stdout}")
+        logging.info(f"stderr: {result.stderr}")
+        logging.info(f"return code: {result.returncode}")
     
     if not with_errors:
         assert not result.stderr, f"Expected no errors but got {result.stderr}"

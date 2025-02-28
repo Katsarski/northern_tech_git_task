@@ -10,6 +10,26 @@ import pytest
 import config
 from helpers import common, git_utils
 
+@pytest.fixture(scope="session", autouse=True)
+def configure_git():
+    """
+    Fixture to configure Git for authentication using GH_TOKEN before running all the tests
+    """
+    git_config_commands = [
+        f'git config --global user.email "{config.GH_EMAIL}"',
+        f'git config --global user.name "{config.GH_USERNAME}"',
+        'git config --global credential.helper store',
+        'git config --global core.askpass ""',
+        f'echo "machine github.com login x-access-token password {config.GH_TOKEN}" > ~/.netrc',
+        f'echo "machine api.github.com login x-access-token password {config.GH_TOKEN}" >> ~/.netrc',
+        'chmod 600 ~/.netrc',
+        'git config --global credential.helper "!f() { echo username=x-access-token; echo password=${GH_TOKEN}; }; f"'
+    ]
+
+    for command in git_config_commands:
+        common.run_shell_command(command, with_errors=True, with_logging=False)
+        
+
 @pytest.fixture
 def get_repo_name() -> str:
     """

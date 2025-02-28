@@ -11,3 +11,4 @@ DEFAULT_BRANCH = "main"
 TEST_FILE_NAME = "README.md"
 GH_USERNAME = os.getenv("GH_USERNAME")
 GH_TOKEN = os.getenv("GH_TOKEN")
+GH_EMAIL = os.getenv("GH_EMAIL")

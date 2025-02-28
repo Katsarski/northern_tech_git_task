@@ -51,28 +51,31 @@ To run the tests locally, follow these steps:
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/Katsarski/northern_tech_git_task.git
-   cd northern_tech_git_task
+   Run `git clone https://github.com/Katsarski/northern_tech_git_task.git`
+   Run `cd northern_tech_git_task`
 
 2. Create a virtual environment and install dependencies:
 
     # Linux/MacOS
-    python3 -m venv .venv
-    source .venv/bin/activate
-    pip install -r requirements.txt
+    - python3.# (tested and developed on 3.13) installed
+    - run `apt install python3.13-venv` if not already there
+    - run `python3 -m venv .venv`
+    - run `source .venv/bin/activate`
+    - run `pip install -r requirements.txt`
 
     # Windows
-    python -m venv .venv
-    .venv\Scripts\activate  # On PowerShell or Command Prompt
-    pip install -r requirements.txt
-    Optional (might be required): Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+    - python3.# (tested and developed on 3.13) installed
+    - run `python -m venv .venv`
+    - run `.venv\Scripts\activate`  # On PowerShell or Command Prompt
+    - run `pip install -r requirements.txt`
+    - Optional (might be required): run `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process`
 
-3. Introduce the following example environment variables
+3. Introduce the following (example) environment variables
    - GH_EMAIL: boyankatsarski@gmail.com
-   - GH_TOKEN: PAT token with CRUD operations enabled at least for the `northern_tech_git_task` repo
+   - GH_TOKEN: PAT OR regular GitHub access token with CRUD operations for the given account
    - GH_USERNAME: Katsarski
 
-4. Run: pytest
+4. Run: `pytest`
 
 ## QA Homework Task references and thoughts
 
